@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from .models import WeatherHistory
+from project.models import Clima
 
-class WeatherHistorySerializer(serializers.ModelSerializer):
+
+class ClimaSerializer(serializers.ModelSerializer):
     class Meta:
-        model = WeatherHistory
-        fields = '__all__'
+        model = Clima
+        fields = ('cidade', 'temperatura', 'condicao', 'data_hora')
+

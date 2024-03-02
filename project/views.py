@@ -1,33 +1,46 @@
-# weatherapi/views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from project.historicoSerializers import ClimaSerializer
 import requests
-from project.models import WeatherHistory
-from project.historicoSerializers import WeatherHistorySerializer
+from project.models import Clima
+from rest_framework import status
+from rest_framework import generics
 
-class WeatherAPIView(APIView):
-    def get(self, request, format=None):
-        try:
-            # Definir os valores manualmente (substitua pelos valores desejados)
-            temperature = 25.0
-            pressure = 1015.0
-            humidity = 60.0
-            precipitation = 0.5
-            condition = 'Sunny'
 
-            # Salvar os dados no banco de dados local
-            WeatherHistory.objects.create(
-                temperature=temperature,
-                pressure=pressure,
-                humidity=humidity,
-                precipitation=precipitation,
-                condition=condition
+class ClimaAPIView(APIView):
+    def get(self, request):
+        cidade = request.query_params.get('cidade')
+
+        if cidade:
+            # Chamada para API OpenWeatherMap
+            url = f'https://api.openweathermap.org/data/2.5/weather?q={cidade}&appid=dfd9ffed5be4eacd9d85e5e8aa360a7a'
+            response = requests.get(url)
+            data = response.json()
+
+            # Extrair dados relevantes
+            temperatura = data['main']['temp']
+            condicao = data['weather'][0]['description']
+
+            # Criar novo objeto Clima
+            clima = Clima.objects.create(
+                cidade=cidade,
+                temperatura=temperatura,
+                condicao=condicao,
             )
 
-            # Serializar e retornar os dados
-            serializer = WeatherHistorySerializer(data=WeatherHistory.objects.all(), many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            # Serializar objeto Clima para JSON
+            serializer = ClimaSerializer(clima)
 
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(serializer.data)
+        else:
+            return Response({"message": "O parâmetro 'cidade' não foi fornecido na query da URL."}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class ClimaDetailAPIView(generics.RetrieveAPIView):
+    queryset = Clima.objects.all()
+    serializer_class = ClimaSerializer
+    lookup_field = 'pk'
+
+class ClimaListAPIView(generics.ListAPIView):
+    queryset = Clima.objects.all()
+    serializer_class = ClimaSerializer
