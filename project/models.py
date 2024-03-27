@@ -3,8 +3,8 @@ from django.db import models
 class WeatherEntity:
 
     def __init__(self, temperature, date,
-                 city='', atmosphericPressure='',
-                 humidity='', weather='') -> None:
+                city='', atmosphericPressure='',
+                humidity='', weather='') -> None:
         self.temperature = temperature
         self.city = city
         self.atmosphericPressure = atmosphericPressure
