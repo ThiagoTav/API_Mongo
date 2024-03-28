@@ -1,27 +1,43 @@
-{% extends "main.html" %} {% block verse%} {{ verse }} {% endblock %} {% block
-content %}
+{% extends "main.html" %}
 
-<h1>Insert Climate Data</h1>
+{% block verse%}
+{{ verse }}
+{% endblock %}
 
-<div class="d-flex justify-content-start flex-wrap">
-  <form
-    action="{% url 'Weather Insert' %}"
-    method="post"
-    enctype="multipart/form-data"
-  >
-    {% csrf_token %}
-    <div class="col-md-12 p-2">
-      <div class="card">
-        <div class="card-body">
-          {% for field in form %}
-          <p class="card-text">{{ field.label }}: {{ field }}</p>
-          {% endfor %}
+{% block content %}
+
+    <h1>Insert Climate Data</h1>
+
+    <div class="d-flex justify-content-start flex-wrap">
+
+        <form action="{% url 'Weather Insert' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="col-md-12 p-2">
+                <div class="card">
+                    <div class="card-body">
+                        {% for field in form %}
+                        <p class="card-text">   
+                        {{ field.label }}: {{ field }}
+                        </p>
+                        {% endfor %}
+                    </div>
+                    <div class="card-footer">
+                        <input type="submit" value="Save">
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="col-md-12 p-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Actions</h5>
+                    <a href="{% url 'Weather Reset' %}" class="btn btn-danger">Reset Data</a>
+                    <!-- Adicionar botão de editar -->
+                    <a href="{% url 'Weather Edit' %}" class="btn btn-primary">Edit Data</a>
+                </div>
+            </div>
         </div>
-        <div class="card-footer">
-          <input type="submit" value="Save" />
-        </div>
-      </div>
+
     </div>
-  </form>
-</div>
 {% endblock content %}
